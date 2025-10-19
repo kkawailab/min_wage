@@ -91,6 +91,9 @@
       const from = breaks[i], to = breaks[i+1];
       labels.push('<i style="background:'+getColor(from+1)+'"></i> ' + from + '–' + (to-1));
     }
+    // 最後の範囲（1150円以上）を追加
+    const lastBreak = breaks[breaks.length-1];
+    labels.push('<i style="background:'+getColor(lastBreak)+'"></i> ' + lastBreak + '円以上');
     div.innerHTML = labels.join('<br>');
     return div;
   };
@@ -100,18 +103,19 @@
   const credit = L.control({position:'bottomright'});
   credit.onAdd = function(map){
     const div = L.DomUtil.create('div','credit');
-    div.innerHTML = '出典：厚生労働省（最低賃金）、自治体境界：Geolonia/OSM';
+    div.innerHTML = '出典：厚生労働省（最低賃金）、境界データ：dataofjapan/land';
     return div;
   };
   credit.addTo(map);
 
   // GeoJSON の取得（prefecture polygons）
-  // データ提供: geolonia/japanese-admin-boundaries（MIT）
-  const GEOJSON_URL = 'https://raw.githubusercontent.com/geolonia/japanese-admin-boundaries/master/ja/prefectures.geojson';
+  // データ提供: dataofjapan/land (MIT)
+  const GEOJSON_URL = 'https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson';
 
   function style(feature) {
     const props = feature.properties;
-    const name_ja = props.nam_ja || props.name_ja || props.name || props.prefecture || '';
+    // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
+    const name_ja = props.nam_ja || props.name_ja || props.name || '';
     const v = minWage[name_ja];
     console.log('Prefecture:', name_ja, 'Value:', v); // デバッグ用
     return {
@@ -125,7 +129,8 @@
 
   function onEachFeature(feature, layer) {
     const props = feature.properties;
-    const name_ja = props.nam_ja || props.name_ja || props.name || props.prefecture || '';
+    // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
+    const name_ja = props.nam_ja || props.name_ja || props.name || '';
     const v = minWage[name_ja];
     layer.bindPopup('<b>' + name_ja + '</b><br/>最低賃金：' + (v ? (v + ' 円/時') : '—'));
     layer.on({

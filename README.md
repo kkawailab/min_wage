@@ -26,7 +26,7 @@
 
 - **Leaflet.js**: インタラクティブ地図ライブラリ
 - **OpenStreetMap**: 背景地図データ
-- **Geolonia/japanese-admin-boundaries**: 都道府県境界データ（GeoJSON）
+- **dataofjapan/land**: 都道府県境界データ（GeoJSON）
 
 ## クイックスタート
 
@@ -75,7 +75,7 @@ npx http-server
 ## データ出典
 
 - **最低賃金データ**: 厚生労働省（2024年度）
-- **境界データ**: Geolonia/japanese-admin-boundaries（MIT License）、OpenStreetMap
+- **境界データ**: dataofjapan/land（MIT License）
 
 ## トラブルシューティング
 
