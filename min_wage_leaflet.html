@@ -32,14 +32,14 @@
 <script>
   // 2024年度 都道府県別最低賃金（円/時）
   const minWage = {
-    "北海道":1010,"青森":953,"岩手":952,"宮城":973,"秋田":951,"山形":955,"福島":955,
-    "茨城":1005,"栃木":1004,"群馬":985,"埼玉":1078,"千葉":1076,"東京":1163,"神奈川":1162,
-    "新潟":985,"富山":998,"石川":984,"福井":984,"山梨":988,"長野":998,
-    "岐阜":1001,"静岡":1034,"愛知":1077,"三重":1023,
-    "滋賀":1017,"京都":1058,"大阪":1114,"兵庫":1052,"奈良":986,"和歌山":980,
-    "鳥取":957,"島根":962,"岡山":982,"広島":1020,"山口":979,"徳島":980,
-    "香川":970,"愛媛":956,"高知":952,
-    "福岡":992,"佐賀":956,"長崎":953,"熊本":952,"大分":954,"宮崎":952,"鹿児島":953,"沖縄":952
+    "北海道":1010,"青森県":953,"岩手県":952,"宮城県":973,"秋田県":951,"山形県":955,"福島県":955,
+    "茨城県":1005,"栃木県":1004,"群馬県":985,"埼玉県":1078,"千葉県":1076,"東京都":1163,"神奈川県":1162,
+    "新潟県":985,"富山県":998,"石川県":984,"福井県":984,"山梨県":988,"長野県":998,
+    "岐阜県":1001,"静岡県":1034,"愛知県":1077,"三重県":1023,
+    "滋賀県":1017,"京都府":1058,"大阪府":1114,"兵庫県":1052,"奈良県":986,"和歌山県":980,
+    "鳥取県":957,"島根県":962,"岡山県":982,"広島県":1020,"山口県":979,"徳島県":980,
+    "香川県":970,"愛媛県":956,"高知県":952,
+    "福岡県":992,"佐賀県":956,"長崎県":953,"熊本県":952,"大分県":954,"宮崎県":952,"鹿児島県":953,"沖縄県":952
   };
   const nationalAvg = 1055;
 
@@ -112,18 +112,12 @@
   // データ提供: dataofjapan/land (MIT)
   const GEOJSON_URL = 'https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson';
 
-  // 都道府県名から接尾辞（都・道・府・県）を削除する関数
-  function normalizePrefName(name) {
-    return name.replace(/[都道府県]$/, '');
-  }
-
   function style(feature) {
     const props = feature.properties;
     // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
     const name_ja = props.nam_ja || props.name_ja || props.name || '';
-    const normalizedName = normalizePrefName(name_ja);
-    const v = minWage[normalizedName];
-    console.log('Prefecture:', name_ja, 'Normalized:', normalizedName, 'Value:', v); // デバッグ用
+    const v = minWage[name_ja];
+    console.log('Prefecture:', name_ja, 'Value:', v); // デバッグ用
     return {
       fillColor: v ? getColor(v) : '#ccc',
       weight: 1,
@@ -137,14 +131,13 @@
     const props = feature.properties;
     // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
     const name_ja = props.nam_ja || props.name_ja || props.name || '';
-    const normalizedName = normalizePrefName(name_ja);
-    const v = minWage[normalizedName];
+    const v = minWage[name_ja];
     layer.bindPopup('<b>' + name_ja + '</b><br/>最低賃金：' + (v ? (v + ' 円/時') : '—'));
     layer.on({
       mouseover: (e) => {
         const l = e.target;
         l.setStyle({ weight: 2, color: '#333' });
-        info.update({ name_ja: normalizedName });
+        info.update({ name_ja: name_ja });
       },
       mouseout: (e) => {
         geojson.resetStyle(e.target);
