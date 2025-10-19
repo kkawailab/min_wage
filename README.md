@@ -1,12 +1,12 @@
 # 最低賃金マップ 2024
 
-[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://katzkawai.github.io/min_wage/min_wage_leaflet.html)
+[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://kkawailab.github.io/min_wage/min_wage_leaflet.html)
 
 2024年度の都道府県別最低賃金を地図上に可視化するWebアプリケーションです。
 
 ## デモ
 
-**[アプリを起動する](https://katzkawai.github.io/min_wage/min_wage_leaflet.html)**
+**[アプリを起動する](https://kkawailab.github.io/min_wage/min_wage_leaflet.html)**
 
 ブラウザで上記リンクにアクセスすると、すぐに地図を閲覧できます。
 
@@ -34,13 +34,13 @@
 
 ### オンラインで使用
 
-**[GitHub Pages版](https://katzkawai.github.io/min_wage/min_wage_leaflet.html)** にアクセスするだけで、すぐに利用できます。
+**[GitHub Pages版](https://kkawailab.github.io/min_wage/min_wage_leaflet.html)** にアクセスするだけで、すぐに利用できます。
 
 ### ローカルで使用
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/katzkawai/min_wage.git
+git clone https://github.com/kkawailab/min_wage.git
 cd min_wage
 
 # ブラウザで開く
