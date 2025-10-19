@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>2024年度 最低賃金 都道府県別（Leafletコロプレス）</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .info {
+      padding: 8px 12px;
+      background: white;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 4px;
+      line-height: 1.35;
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans CJK JP", "Noto Sans JP", Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    }
+    .legend { line-height: 18px; color: #555; }
+    .legend i {
+      width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.8;
+    }
+    .credit { position: absolute; bottom: 6px; right: 8px; background: rgba(255,255,255,.85); padding: 4px 8px; border-radius: 4px; font-size: 12px;}
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  // 2024年度 都道府県別最低賃金（円/時）
+  const minWage = {
+    "北海道":1010,"青森県":953,"岩手県":952,"宮城県":973,"秋田県":951,"山形県":955,"福島県":955,
+    "茨城県":1005,"栃木県":1004,"群馬県":985,"埼玉県":1078,"千葉県":1076,"東京都":1163,"神奈川県":1162,
+    "新潟県":985,"富山県":998,"石川県":984,"福井県":984,"山梨県":988,"長野県":998,
+    "岐阜県":1001,"静岡県":1034,"愛知県":1077,"三重県":1023,
+    "滋賀県":1017,"京都府":1058,"大阪府":1114,"兵庫県":1052,"奈良県":986,"和歌山県":980,
+    "鳥取県":957,"島根県":962,"岡山県":982,"広島県":1020,"山口県":979,"徳島県":980,
+    "香川県":970,"愛媛県":956,"高知県":952,
+    "福岡県":992,"佐賀県":956,"長崎県":953,"熊本県":952,"大分県":954,"宮崎県":952,"鹿児島県":953,"沖縄県":952
+  };
+  const nationalAvg = 1055;
+
+  // 色スケール（等間隔）
+  const breaks = [950, 975, 1000, 1025, 1050, 1075, 1100, 1125, 1150, 1175];
+  function getColor(v) {
+    return v >= 1150 ? '#08306b' :
+           v >= 1125 ? '#08519c' :
+           v >= 1100 ? '#2171b5' :
+           v >= 1075 ? '#4292c6' :
+           v >= 1050 ? '#6baed6' :
+           v >= 1025 ? '#9ecae1' :
+           v >= 1000 ? '#c6dbef' :
+           v >= 975  ? '#deebf7' :
+           v >= 950  ? '#f7fbff' : '#fff';
+  }
+
+  // 地図
+  const map = L.map('map', { zoomControl: true }).setView([36.2, 137.9], 5.2);
+
+  // 背景（オープンストリートマップ）
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 10,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // 情報パネル
+  const info = L.control();
+  info.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+  };
+  info.update = function(props) {
+    this._div.innerHTML = '<b>2024年度 最低賃金（円/時）</b><br/>' + 
+      (props ? (props.name_ja + '：<b>' + (minWage[props.name_ja] ?? '—') + '円</b>')
+             : '都道府県をホバーしてください。') +
+      '<hr style="margin:.5em 0"/>' +
+      '全国加重平均：<b>'+nationalAvg+'円</b>';
+  };
+  info.addTo(map);
+
+  // 凡例
+  const legend = L.control({position: 'bottomleft'});
+  legend.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'info legend');
+    let labels = [];
+    for (let i = 0; i < breaks.length-1; i++) {
+      const from = breaks[i], to = breaks[i+1];
+      labels.push('<i style="background:'+getColor(from+1)+'"></i> ' + from + '–' + (to-1));
+    }
+    // 最後の範囲（1150円以上）を追加
+    const lastBreak = breaks[breaks.length-1];
+    labels.push('<i style="background:'+getColor(lastBreak)+'"></i> ' + lastBreak + '円以上');
+    div.innerHTML = labels.join('<br>');
+    return div;
+  };
+  legend.addTo(map);
+
+  // 出典
+  const credit = L.control({position:'bottomright'});
+  credit.onAdd = function(map){
+    const div = L.DomUtil.create('div','credit');
+    div.innerHTML = '出典：厚生労働省（最低賃金）、境界データ：dataofjapan/land';
+    return div;
+  };
+  credit.addTo(map);
+
+  // GeoJSON の取得（prefecture polygons）
+  // データ提供: dataofjapan/land (MIT)
+  const GEOJSON_URL = 'https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson';
+
+  function style(feature) {
+    const props = feature.properties;
+    // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
+    const name_ja = props.nam_ja || props.name_ja || props.name || '';
+    const v = minWage[name_ja];
+    console.log('Prefecture:', name_ja, 'Value:', v); // デバッグ用
+    return {
+      fillColor: v ? getColor(v) : '#ccc',
+      weight: 1,
+      opacity: 1,
+      color: '#777',
+      fillOpacity: 0.85
+    };
+  }
+
+  function onEachFeature(feature, layer) {
+    const props = feature.properties;
+    // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
+    const name_ja = props.nam_ja || props.name_ja || props.name || '';
+    const v = minWage[name_ja];
+    layer.bindPopup('<b>' + name_ja + '</b><br/>最低賃金：' + (v ? (v + ' 円/時') : '—'));
+    layer.on({
+      mouseover: (e) => {
+        const l = e.target;
+        l.setStyle({ weight: 2, color: '#333' });
+        info.update({ name_ja: name_ja });
+      },
+      mouseout: (e) => {
+        geojson.resetStyle(e.target);
+        info.update();
+      },
+      click: (e) => e.target.openPopup()
+    });
+  }
+
+  let geojson = null;
+  fetch(GEOJSON_URL)
+    .then(r => r.json())
+    .then(data => {
+      geojson = L.geoJson(data, { style, onEachFeature }).addTo(map);
+      map.fitBounds(geojson.getBounds(), { padding: [10,10] });
+    })
+    .catch(err => {
+      console.error(err);
+      alert('境界データの取得に失敗しました。ネットワーク接続をご確認ください。');
+    });
+</script>
+</body>
+</html>
