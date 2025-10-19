@@ -112,12 +112,18 @@
   // データ提供: dataofjapan/land (MIT)
   const GEOJSON_URL = 'https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson';
 
+  // 都道府県名から接尾辞（都・道・府・県）を削除する関数
+  function normalizePrefName(name) {
+    return name.replace(/[都道府県]$/, '');
+  }
+
   function style(feature) {
     const props = feature.properties;
     // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
     const name_ja = props.nam_ja || props.name_ja || props.name || '';
-    const v = minWage[name_ja];
-    console.log('Prefecture:', name_ja, 'Value:', v); // デバッグ用
+    const normalizedName = normalizePrefName(name_ja);
+    const v = minWage[normalizedName];
+    console.log('Prefecture:', name_ja, 'Normalized:', normalizedName, 'Value:', v); // デバッグ用
     return {
       fillColor: v ? getColor(v) : '#ccc',
       weight: 1,
@@ -131,13 +137,14 @@
     const props = feature.properties;
     // dataofjapan/land では nam_ja プロパティに日本語名が格納されている
     const name_ja = props.nam_ja || props.name_ja || props.name || '';
-    const v = minWage[name_ja];
+    const normalizedName = normalizePrefName(name_ja);
+    const v = minWage[normalizedName];
     layer.bindPopup('<b>' + name_ja + '</b><br/>最低賃金：' + (v ? (v + ' 円/時') : '—'));
     layer.on({
       mouseover: (e) => {
         const l = e.target;
         l.setStyle({ weight: 2, color: '#333' });
-        info.update({ name_ja: name_ja });
+        info.update({ name_ja: normalizedName });
       },
       mouseout: (e) => {
         geojson.resetStyle(e.target);
