@@ -1,12 +1,12 @@
 # 最低賃金マップ 2024
 
-[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://kkawailab.github.io/min_wage/min_wage_leaflet.html)
+[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://kkawailab.github.io/min_wage/)
 
 2024年度の都道府県別最低賃金を地図上に可視化するWebアプリケーションです。
 
 ## デモ
 
-**[アプリを起動する](https://kkawailab.github.io/min_wage/min_wage_leaflet.html)**
+**[アプリを起動する](https://kkawailab.github.io/min_wage/)**
 
 ブラウザで上記リンクにアクセスすると、すぐに地図を閲覧できます。
 
@@ -34,7 +34,7 @@
 
 ### オンラインで使用
 
-**[GitHub Pages版](https://kkawailab.github.io/min_wage/min_wage_leaflet.html)** にアクセスするだけで、すぐに利用できます。
+**[GitHub Pages版](https://kkawailab.github.io/min_wage/)** にアクセスするだけで、すぐに利用できます。
 
 ### ローカルで使用
 
@@ -44,12 +44,12 @@ git clone https://github.com/kkawailab/min_wage.git
 cd min_wage
 
 # ブラウザで開く
-open min_wage_leaflet.html  # macOS
-xdg-open min_wage_leaflet.html  # Linux
-start min_wage_leaflet.html  # Windows
+open index.html  # macOS
+xdg-open index.html  # Linux
+start index.html  # Windows
 ```
 
-または、`min_wage_leaflet.html`をブラウザにドラッグ&ドロップしてください。
+または、`index.html`をブラウザにドラッグ&ドロップしてください。
 
 #### ローカルサーバーで起動（推奨）
 
@@ -63,7 +63,7 @@ python -m http.server 8000
 npx http-server
 ```
 
-ブラウザで `http://localhost:8000/min_wage_leaflet.html` にアクセスしてください。
+ブラウザで `http://localhost:8000/` にアクセスしてください。
 
 ## 使い方
 
